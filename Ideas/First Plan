@@ -1,0 +1,44 @@
+Spotify Playlist Creator
+
+Initial Idea
+So you open a web page
+There’s a form you fill out
+It asks questions about
+
+-Genre
+-Era/Decades
+-Artists you want to feature
+-Number of Songs
+
+We compile this data and then ask an AI
+We can use chat gpt or any other open source one.
+
+Then we compile a list of songs
+
+Save this list and open the Spotify api
+Then we create a playlist for the user for their specific needs
+
+Just simple steps
+
+
+
+Coding Steps
+
+Step 1
+Go over the whole project idea, build out the plan, and set up task
+
+Step 2
+We need to first understand the Spotify API - So how it works and making a new playlist for users (would they sign in or do we just let them add it to their account?)
+
+Step 3
+Find a way to get user information - we could do Python script but we can’t do that online - so we might wanna look into React as a JS framework
+
+Step 4
+Get the data and learn some firebase backend to store it
+Back end is gonna be tough but luckily a ton of people are making BASS (Backend As A Service) so we can get a free tier and not worry about any of that
+
+Step 5
+Send the data to an AI - chatgpt has another API but it might charge (looks like a couple cents each 100 times) - and get a list of songs!
+
+Step 6
+Send this to the Spotify script we made - (Step 1 we should probably make a Python script) - and watch magic
