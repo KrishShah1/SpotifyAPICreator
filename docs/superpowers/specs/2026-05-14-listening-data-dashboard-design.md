@@ -51,7 +51,7 @@ spotify-profile-demo/
 
 ### Module contracts
 
-**`api.js`** — one function per endpoint, all using the existing `fetchWithAuth` helper:
+**`api.js`** — one function per endpoint, all using the existing `fetchWithAuth` helper. The helper currently throws a generic `Error("API error: <status>")`; we'll enrich it to attach `status` and `retryAfter` (parsed from the `Retry-After` header on 429s) to the thrown error so views can render meaningful messages.
 
 - `getCurrentUser()` (existing)
 - `getTopArtists(timeRange, limit = 50)` → `GET /me/top/artists?time_range=<short|medium|long>_term&limit=<n>`
@@ -79,6 +79,8 @@ tab click
          ├─> if rendered: show panel
          └─> if not: view.render(panel) → api.getX() → DOM update → mark rendered
 ```
+
+A small shared cache lives in `api.js` (a plain `Map<cacheKey, Promise>`) for the calls that more than one view needs — specifically `getTopArtists("medium_term", 50)`, which both Top Artists and Genres consume. Each `api.getX()` checks the cache before fetching. Time-range changes invalidate by computing a new cache key.
 
 Time-range change inside Top Artists / Top Tracks:
 
