@@ -13,8 +13,9 @@ async function fetchWithAuth(endpoint) {
   if (response.status === 204) return null;
 
   if (!response.ok) {
-    const err = new Error(`API error: ${response.status}`);
+    const err = new Error(`API error ${response.status} on ${endpoint}`);
     err.status = response.status;
+    err.endpoint = endpoint;
     const retryAfter = response.headers.get("Retry-After");
     if (retryAfter) err.retryAfter = Number(retryAfter);
     throw err;

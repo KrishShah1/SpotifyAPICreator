@@ -3,9 +3,9 @@ import { aggregateGenres } from "../util/genres.js";
 
 export async function render(container) {
   const [artists, playlists, following] = await Promise.all([
-    getTopArtists("medium_term", 50),
-    getMyPlaylists(50),
-    getFollowedArtists(50),
+    getTopArtists("medium_term", 50).catch(() => ({ items: [] })),
+    getMyPlaylists(50).catch(() => ({ items: [] })),
+    getFollowedArtists(50).catch(() => ({ artists: { items: [] } })),
   ]);
 
   const genres = aggregateGenres(artists.items);
