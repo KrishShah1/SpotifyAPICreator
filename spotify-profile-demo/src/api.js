@@ -26,3 +26,55 @@ async function fetchWithAuth(endpoint) {
 export async function getCurrentUser() {
   return fetchWithAuth("/me");
 }
+
+const cache = new Map();
+
+function cached(key, fetcher) {
+  if (cache.has(key)) return cache.get(key);
+  const promise = fetcher().catch((e) => {
+    cache.delete(key);
+    throw e;
+  });
+  cache.set(key, promise);
+  return promise;
+}
+
+export function clearApiCache() {
+  cache.clear();
+}
+
+export function getTopArtists(timeRange = "medium_term", limit = 50) {
+  const key = `topArtists:${timeRange}:${limit}`;
+  return cached(key, () =>
+    fetchWithAuth(`/me/top/artists?time_range=${timeRange}&limit=${limit}`)
+  );
+}
+
+export function getTopTracks(timeRange = "medium_term", limit = 50) {
+  const key = `topTracks:${timeRange}:${limit}`;
+  return cached(key, () =>
+    fetchWithAuth(`/me/top/tracks?time_range=${timeRange}&limit=${limit}`)
+  );
+}
+
+export function getRecentlyPlayed(limit = 50) {
+  return cached(`recentlyPlayed:${limit}`, () =>
+    fetchWithAuth(`/me/player/recently-played?limit=${limit}`)
+  );
+}
+
+export function getCurrentlyPlaying() {
+  return fetchWithAuth(`/me/player/currently-playing`);
+}
+
+export function getMyPlaylists(limit = 50) {
+  return cached(`playlists:${limit}`, () =>
+    fetchWithAuth(`/me/playlists?limit=${limit}`)
+  );
+}
+
+export function getFollowedArtists(limit = 50) {
+  return cached(`following:${limit}`, () =>
+    fetchWithAuth(`/me/following?type=artist&limit=${limit}`)
+  );
+}
