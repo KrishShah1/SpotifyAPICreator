@@ -15,7 +15,7 @@ export async function render(container) {
     const t = entry.track;
     const li = document.createElement("li");
     li.className = "track-row";
-    const art = t.album.images?.[2]?.url ?? t.album.images?.[0]?.url;
+    const art = t.album?.images?.[2]?.url ?? t.album?.images?.[0]?.url;
     const artists = t.artists.map((a) => a.name).join(", ");
     li.innerHTML = `
       ${art ? `<img src="${art}" alt="">` : `<div class="img-placeholder small"></div>`}

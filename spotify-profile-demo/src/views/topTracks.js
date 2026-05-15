@@ -49,7 +49,7 @@ async function populate(list, timeRange) {
   for (const t of data.items) {
     const li = document.createElement("li");
     li.className = "track-row";
-    const art = t.album.images?.[2]?.url ?? t.album.images?.[0]?.url;
+    const art = t.album?.images?.[2]?.url ?? t.album?.images?.[0]?.url;
     const artists = t.artists.map((a) => a.name).join(", ");
     const preview = t.preview_url
       ? `<button class="preview-btn" data-src="${t.preview_url}">▶︎</button>`
