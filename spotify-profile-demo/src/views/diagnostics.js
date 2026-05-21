@@ -36,6 +36,7 @@ function verdictFor(status, bodyText) {
     }
     return "Forbidden — missing scope or app not allowlisted";
   }
+  if (status === 404) return "Not Found — endpoint removed/deprecated for this app";
   if (status === 429) return "Rate limited";
   if (status >= 500) return "Spotify server error";
   if (status === 0) return "Network error";
