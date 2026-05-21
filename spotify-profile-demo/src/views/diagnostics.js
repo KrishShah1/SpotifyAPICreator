@@ -18,6 +18,8 @@ const ENDPOINTS = [
   { path: "/recommendations?seed_genres=indie&limit=5", scope: "(none)", note: "Recommendations" },
   { path: "/audio-features?ids=4cOdK2wGLETKBW3PvgPWqT", scope: "(none)", note: "Audio features" },
   { path: "/artists/4tZwfgrHOc3mvqYlEYSvVi/related-artists", scope: "(none)", note: "Related artists" },
+  { path: "/artists/4tZwfgrHOc3mvqYlEYSvVi/top-tracks?market=US", scope: "(none)", note: "Artist top tracks" },
+  { path: "/artists/4tZwfgrHOc3mvqYlEYSvVi/albums?limit=1", scope: "(none)", note: "Artist albums" },
 ];
 
 function statusClass(status) {
