@@ -6,6 +6,7 @@ import { render as renderTopArtists } from "./views/topArtists.js";
 import { render as renderTopTracks } from "./views/topTracks.js";
 import { render as renderRecentlyPlayed } from "./views/recentlyPlayed.js";
 import { render as renderGenres } from "./views/genres.js";
+import { render as renderDiagnostics } from "./views/diagnostics.js";
 
 async function handleCallback() {
   const params = new URLSearchParams(window.location.search);
@@ -41,6 +42,7 @@ function showLoggedIn() {
   registerView("topTracks", renderTopTracks);
   registerView("recentlyPlayed", renderRecentlyPlayed);
   registerView("genres", renderGenres);
+  registerView("diagnostics", renderDiagnostics);
 
   mountRouter("overview");
 }
