@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spotify Playlist Creator</title>
+    <title>Spotify Listening Dashboard</title>
     <link rel="stylesheet" href="style.css" />
     <script src="src/script.js" type="module"></script>
   </head>
@@ -23,11 +23,33 @@
       </div>
 
       <nav id="tab-nav" style="display: none">
+        <span class="tab-group">Listening</span>
         <button class="tab-btn" data-tab="overview">Overview</button>
         <button class="tab-btn" data-tab="topArtists">Top Artists</button>
         <button class="tab-btn" data-tab="topTracks">Top Tracks</button>
         <button class="tab-btn" data-tab="recentlyPlayed">Recently Played</button>
         <button class="tab-btn" data-tab="genres">Genres &amp; Library</button>
+        <button class="tab-btn" data-tab="nowPlaying">Now Playing</button>
+
+        <span class="tab-group">History</span>
+        <button class="tab-btn" data-tab="heatmap">Heatmap</button>
+        <button class="tab-btn" data-tab="timeOfDay">Time of Day</button>
+        <button class="tab-btn" data-tab="streaks">Streaks</button>
+        <button class="tab-btn" data-tab="mostPlayed">Most Played</button>
+        <button class="tab-btn" data-tab="timeTravel">Time Travel</button>
+
+        <span class="tab-group">Discover</span>
+        <button class="tab-btn" data-tab="mightLike">Might Like</button>
+        <button class="tab-btn" data-tab="releaseRadar">Release Radar</button>
+        <button class="tab-btn" data-tab="discography">Discography</button>
+        <button class="tab-btn" data-tab="likedSongs">Liked Songs</button>
+
+        <span class="tab-group">Create</span>
+        <button class="tab-btn" data-tab="playlistGenerator">Playlist Generator</button>
+        <button class="tab-btn" data-tab="timeCapsule">Time Capsule</button>
+        <button class="tab-btn" data-tab="playlistDiff">Playlist Diff</button>
+
+        <span class="tab-group">Tools</span>
         <button class="tab-btn" data-tab="diagnostics">Diagnostics</button>
       </nav>
 
@@ -37,6 +59,19 @@
         <section class="panel" data-panel="topTracks" hidden></section>
         <section class="panel" data-panel="recentlyPlayed" hidden></section>
         <section class="panel" data-panel="genres" hidden></section>
+        <section class="panel" data-panel="nowPlaying" hidden></section>
+        <section class="panel" data-panel="heatmap" hidden></section>
+        <section class="panel" data-panel="timeOfDay" hidden></section>
+        <section class="panel" data-panel="streaks" hidden></section>
+        <section class="panel" data-panel="mostPlayed" hidden></section>
+        <section class="panel" data-panel="timeTravel" hidden></section>
+        <section class="panel" data-panel="mightLike" hidden></section>
+        <section class="panel" data-panel="releaseRadar" hidden></section>
+        <section class="panel" data-panel="discography" hidden></section>
+        <section class="panel" data-panel="likedSongs" hidden></section>
+        <section class="panel" data-panel="playlistGenerator" hidden></section>
+        <section class="panel" data-panel="timeCapsule" hidden></section>
+        <section class="panel" data-panel="playlistDiff" hidden></section>
         <section class="panel" data-panel="diagnostics" hidden></section>
       </main>
     </div>
