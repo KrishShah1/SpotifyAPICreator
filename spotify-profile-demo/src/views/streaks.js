@@ -51,7 +51,7 @@ export async function render(container) {
 
   const stats = container.querySelector(".streaks-stats");
   const list = container.querySelector(".streaks-list");
-  const history = loadHistory();
+  const history = await loadHistory();
 
   if (history.length === 0) {
     stats.innerHTML = `<p class="muted">No history yet.</p>`;

@@ -3,77 +3,137 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spotify Listening Dashboard</title>
+    <title>Spotify Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
     <script src="src/script.js" type="module"></script>
   </head>
   <body>
     <div id="app">
-      <header id="app-header" style="display: none">
-        <h1>Spotify Listening Dashboard</h1>
-        <span id="header-user"></span>
-        <button id="logout-btn">Log out</button>
-      </header>
+
+      <!-- Login / landing -->
+      <div id="login-section" style="display: none">
+        <div class="login-hero">
+          <div class="login-logo">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#1DB954"/><path d="M28 16.5c-4.5-2.7-11.9-2.9-16.2-1.6-.7.2-1.4-.2-1.6-.9-.2-.7.2-1.4.9-1.6 4.9-1.5 13.1-1.2 18.3 1.9.6.4.8 1.2.4 1.8-.4.6-1.2.8-1.8.4zm-.2 4.1c-.4.5-1.1.7-1.6.3-3.8-2.3-9.5-3-13.9-1.6-.6.2-1.2-.1-1.4-.7-.2-.6.1-1.2.7-1.4 5.1-1.5 11.4-.8 15.8 1.9.5.3.7 1 .4 1.5zm-1.8 3.9c-.3.4-.9.6-1.3.3-3.3-2-7.4-2.5-12.2-1.4-.5.1-1-.2-1.1-.7-.1-.5.2-1 .7-1.1 5.3-1.2 9.9-.7 13.6 1.6.4.3.6.9.3 1.3z" fill="white"/></svg>
+            <span>Spotify Dashboard</span>
+          </div>
+          <h1 class="login-title">Your music, deeply explored</h1>
+          <p class="login-subtitle">Connect your Spotify to see top artists, track your listening history, discover new music, and create playlists.</p>
+          <button id="login-btn" class="login-btn">
+            <svg width="18" height="18" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="white"/><path d="M28 16.5c-4.5-2.7-11.9-2.9-16.2-1.6-.7.2-1.4-.2-1.6-.9-.2-.7.2-1.4.9-1.6 4.9-1.5 13.1-1.2 18.3 1.9.6.4.8 1.2.4 1.8-.4.6-1.2.8-1.8.4zm-.2 4.1c-.4.5-1.1.7-1.6.3-3.8-2.3-9.5-3-13.9-1.6-.6.2-1.2-.1-1.4-.7-.2-.6.1-1.2.7-1.4 5.1-1.5 11.4-.8 15.8 1.9.5.3.7 1 .4 1.5zm-1.8 3.9c-.3.4-.9.6-1.3.3-3.3-2-7.4-2.5-12.2-1.4-.5.1-1-.2-1.1-.7-.1-.5.2-1 .7-1.1 5.3-1.2 9.9-.7 13.6 1.6.4.3.6.9.3 1.3z" fill="#1DB954"/></svg>
+            Log in with Spotify
+          </button>
+          <div class="login-features">
+            <div class="login-feature">
+              <span class="feature-icon">🎵</span>
+              <div><strong>Top Artists & Tracks</strong><p>See what you've been listening to across 4 weeks, 6 months, and all time</p></div>
+            </div>
+            <div class="login-feature">
+              <span class="feature-icon">📊</span>
+              <div><strong>Listening History</strong><p>Heatmaps, streaks, and time-of-day patterns — synced to the cloud</p></div>
+            </div>
+            <div class="login-feature">
+              <span class="feature-icon">🔍</span>
+              <div><strong>Discover & Create</strong><p>New releases, recommendations, and playlist tools</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <p id="status"></p>
 
-      <div id="login-section" style="display: none">
-        <p>Connect your Spotify account to get started.</p>
-        <button id="login-btn">Log in with Spotify</button>
+      <!-- App shell -->
+      <div id="app-shell" style="display: none">
+
+        <!-- Mobile top bar -->
+        <header id="mobile-bar">
+          <button id="hamburger" aria-label="Open menu">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect y="2" width="18" height="2" rx="1" fill="currentColor"/>
+              <rect y="8" width="18" height="2" rx="1" fill="currentColor"/>
+              <rect y="14" width="18" height="2" rx="1" fill="currentColor"/>
+            </svg>
+          </button>
+          <span id="mobile-tab-title">Overview</span>
+          <span id="mobile-user"></span>
+        </header>
+
+        <!-- Overlay (mobile) -->
+        <div id="sidebar-overlay"></div>
+
+        <div id="layout">
+          <!-- Sidebar -->
+          <nav id="sidebar">
+            <div class="sidebar-header">
+              <svg width="20" height="20" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#1DB954"/><path d="M28 16.5c-4.5-2.7-11.9-2.9-16.2-1.6-.7.2-1.4-.2-1.6-.9-.2-.7.2-1.4.9-1.6 4.9-1.5 13.1-1.2 18.3 1.9.6.4.8 1.2.4 1.8-.4.6-1.2.8-1.8.4zm-.2 4.1c-.4.5-1.1.7-1.6.3-3.8-2.3-9.5-3-13.9-1.6-.6.2-1.2-.1-1.4-.7-.2-.6.1-1.2.7-1.4 5.1-1.5 11.4-.8 15.8 1.9.5.3.7 1 .4 1.5zm-1.8 3.9c-.3.4-.9.6-1.3.3-3.3-2-7.4-2.5-12.2-1.4-.5.1-1-.2-1.1-.7-.1-.5.2-1 .7-1.1 5.3-1.2 9.9-.7 13.6 1.6.4.3.6.9.3 1.3z" fill="white"/></svg>
+              <span>Dashboard</span>
+            </div>
+
+            <div class="sidebar-user">
+              <span id="header-user"></span>
+              <button id="logout-btn">Log out</button>
+            </div>
+
+            <div class="sidebar-nav">
+              <p class="nav-group">Listening</p>
+              <button class="tab-btn" data-tab="overview">Overview</button>
+              <button class="tab-btn" data-tab="topArtists">Top Artists</button>
+              <button class="tab-btn" data-tab="topTracks">Top Tracks</button>
+              <button class="tab-btn" data-tab="recentlyPlayed">Recently Played</button>
+              <button class="tab-btn" data-tab="genres">Genres</button>
+              <button class="tab-btn" data-tab="nowPlaying">Now Playing</button>
+
+              <p class="nav-group">History</p>
+              <button class="tab-btn" data-tab="heatmap">Heatmap</button>
+              <button class="tab-btn" data-tab="timeOfDay">Time of Day</button>
+              <button class="tab-btn" data-tab="streaks">Streaks</button>
+              <button class="tab-btn" data-tab="mostPlayed">Most Played</button>
+              <button class="tab-btn" data-tab="timeTravel">Time Travel</button>
+
+              <p class="nav-group">Discover</p>
+              <button class="tab-btn" data-tab="mightLike">Might Like</button>
+              <button class="tab-btn" data-tab="releaseRadar">Release Radar</button>
+              <button class="tab-btn" data-tab="discography">Discography</button>
+              <button class="tab-btn" data-tab="likedSongs">Liked Songs</button>
+
+              <p class="nav-group">Create</p>
+              <button class="tab-btn" data-tab="playlistGenerator">Playlist Generator</button>
+              <button class="tab-btn" data-tab="timeCapsule">Time Capsule</button>
+              <button class="tab-btn" data-tab="playlistDiff">Playlist Diff</button>
+
+              <p class="nav-group">Tools</p>
+              <button class="tab-btn" data-tab="diagnostics">Diagnostics</button>
+            </div>
+          </nav>
+
+          <!-- Main content -->
+          <main id="panels">
+            <section class="panel" data-panel="overview"></section>
+            <section class="panel" data-panel="topArtists" hidden></section>
+            <section class="panel" data-panel="topTracks" hidden></section>
+            <section class="panel" data-panel="recentlyPlayed" hidden></section>
+            <section class="panel" data-panel="genres" hidden></section>
+            <section class="panel" data-panel="nowPlaying" hidden></section>
+            <section class="panel" data-panel="heatmap" hidden></section>
+            <section class="panel" data-panel="timeOfDay" hidden></section>
+            <section class="panel" data-panel="streaks" hidden></section>
+            <section class="panel" data-panel="mostPlayed" hidden></section>
+            <section class="panel" data-panel="timeTravel" hidden></section>
+            <section class="panel" data-panel="mightLike" hidden></section>
+            <section class="panel" data-panel="releaseRadar" hidden></section>
+            <section class="panel" data-panel="discography" hidden></section>
+            <section class="panel" data-panel="likedSongs" hidden></section>
+            <section class="panel" data-panel="playlistGenerator" hidden></section>
+            <section class="panel" data-panel="timeCapsule" hidden></section>
+            <section class="panel" data-panel="playlistDiff" hidden></section>
+            <section class="panel" data-panel="diagnostics" hidden></section>
+          </main>
+        </div>
       </div>
 
-      <nav id="tab-nav" style="display: none">
-        <span class="tab-group">Listening</span>
-        <button class="tab-btn" data-tab="overview">Overview</button>
-        <button class="tab-btn" data-tab="topArtists">Top Artists</button>
-        <button class="tab-btn" data-tab="topTracks">Top Tracks</button>
-        <button class="tab-btn" data-tab="recentlyPlayed">Recently Played</button>
-        <button class="tab-btn" data-tab="genres">Genres &amp; Library</button>
-        <button class="tab-btn" data-tab="nowPlaying">Now Playing</button>
-
-        <span class="tab-group">History</span>
-        <button class="tab-btn" data-tab="heatmap">Heatmap</button>
-        <button class="tab-btn" data-tab="timeOfDay">Time of Day</button>
-        <button class="tab-btn" data-tab="streaks">Streaks</button>
-        <button class="tab-btn" data-tab="mostPlayed">Most Played</button>
-        <button class="tab-btn" data-tab="timeTravel">Time Travel</button>
-
-        <span class="tab-group">Discover</span>
-        <button class="tab-btn" data-tab="mightLike">Might Like</button>
-        <button class="tab-btn" data-tab="releaseRadar">Release Radar</button>
-        <button class="tab-btn" data-tab="discography">Discography</button>
-        <button class="tab-btn" data-tab="likedSongs">Liked Songs</button>
-
-        <span class="tab-group">Create</span>
-        <button class="tab-btn" data-tab="playlistGenerator">Playlist Generator</button>
-        <button class="tab-btn" data-tab="timeCapsule">Time Capsule</button>
-        <button class="tab-btn" data-tab="playlistDiff">Playlist Diff</button>
-
-        <span class="tab-group">Tools</span>
-        <button class="tab-btn" data-tab="diagnostics">Diagnostics</button>
-      </nav>
-
-      <main id="panels" style="display: none">
-        <section class="panel" data-panel="overview"></section>
-        <section class="panel" data-panel="topArtists" hidden></section>
-        <section class="panel" data-panel="topTracks" hidden></section>
-        <section class="panel" data-panel="recentlyPlayed" hidden></section>
-        <section class="panel" data-panel="genres" hidden></section>
-        <section class="panel" data-panel="nowPlaying" hidden></section>
-        <section class="panel" data-panel="heatmap" hidden></section>
-        <section class="panel" data-panel="timeOfDay" hidden></section>
-        <section class="panel" data-panel="streaks" hidden></section>
-        <section class="panel" data-panel="mostPlayed" hidden></section>
-        <section class="panel" data-panel="timeTravel" hidden></section>
-        <section class="panel" data-panel="mightLike" hidden></section>
-        <section class="panel" data-panel="releaseRadar" hidden></section>
-        <section class="panel" data-panel="discography" hidden></section>
-        <section class="panel" data-panel="likedSongs" hidden></section>
-        <section class="panel" data-panel="playlistGenerator" hidden></section>
-        <section class="panel" data-panel="timeCapsule" hidden></section>
-        <section class="panel" data-panel="playlistDiff" hidden></section>
-        <section class="panel" data-panel="diagnostics" hidden></section>
-      </main>
     </div>
   </body>
 </html>

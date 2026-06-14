@@ -46,9 +46,7 @@ async function handleCallback() {
 
 function showLoggedIn() {
   document.getElementById("login-section").style.display = "none";
-  document.getElementById("app-header").style.display = "flex";
-  document.getElementById("tab-nav").style.display = "flex";
-  document.getElementById("panels").style.display = "block";
+  document.getElementById("app-shell").style.display = "block";
 
   registerView("overview", renderOverview);
   registerView("topArtists", renderTopArtists);
@@ -75,9 +73,7 @@ function showLoggedIn() {
 
 function showLoggedOut() {
   document.getElementById("login-section").style.display = "block";
-  document.getElementById("app-header").style.display = "none";
-  document.getElementById("tab-nav").style.display = "none";
-  document.getElementById("panels").style.display = "none";
+  document.getElementById("app-shell").style.display = "none";
 }
 
 window.addEventListener("beforeunload", () => {

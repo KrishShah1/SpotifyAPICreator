@@ -18,7 +18,7 @@ export async function render(container) {
   const $ = (s) => container.querySelector(s);
   const list = $(".mp-list");
   const stats = $(".mp-stats");
-  const history = loadHistory();
+  const history = await loadHistory();
 
   if (history.length === 0) {
     stats.innerHTML = `<span class="muted">No history yet — open the Heatmap tab to start tracking.</span>`;

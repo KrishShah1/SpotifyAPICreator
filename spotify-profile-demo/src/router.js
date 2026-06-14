@@ -16,6 +16,14 @@ export function activateTab(name) {
     p.hidden = p.dataset.panel !== name;
   });
 
+  // Update mobile header title
+  const activeBtn = document.querySelector(`.tab-btn[data-tab="${name}"]`);
+  const mobileTitle = document.getElementById("mobile-tab-title");
+  if (mobileTitle && activeBtn) mobileTitle.textContent = activeBtn.textContent.trim();
+
+  // Close drawer on mobile after selection
+  closeSidebar();
+
   activeTab = name;
 
   if (!rendered.has(name)) {
@@ -55,9 +63,24 @@ async function renderInto(name, panel) {
   }
 }
 
+function closeSidebar() {
+  document.getElementById("sidebar")?.classList.remove("open");
+  document.getElementById("sidebar-overlay")?.classList.remove("visible");
+}
+
 export function mountRouter(initialTab = "overview") {
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => activateTab(btn.dataset.tab));
   });
+
+  // Hamburger toggle
+  document.getElementById("hamburger")?.addEventListener("click", () => {
+    document.getElementById("sidebar")?.classList.toggle("open");
+    document.getElementById("sidebar-overlay")?.classList.toggle("visible");
+  });
+
+  // Overlay tap closes sidebar
+  document.getElementById("sidebar-overlay")?.addEventListener("click", closeSidebar);
+
   activateTab(initialTab);
 }

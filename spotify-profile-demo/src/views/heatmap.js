@@ -1,29 +1,40 @@
 import { getRecentlyPlayed } from "../api.js";
-import { HISTORY_KEY, loadHistory, dayKey } from "../util/history.js";
+import { loadHistory, saveHistory, dayKey } from "../util/history.js";
 
-const DAYS_TO_SHOW = 30;
-
-function saveHistory(items) {
-  const trimmed = items.slice(-2000);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
-}
+const RANGES = [
+  { label: "30 days",  days: 30 },
+  { label: "90 days",  days: 90 },
+  { label: "6 months", days: 182 },
+  { label: "1 year",   days: 365 },
+  { label: "All time", days: null },
+];
 
 function buildDayBuckets(history) {
   const buckets = new Map();
   for (const entry of history) {
-    const d = new Date(entry.played_at);
-    const k = dayKey(d);
+    const k = dayKey(new Date(entry.played_at));
     buckets.set(k, (buckets.get(k) ?? 0) + 1);
   }
   return buckets;
 }
 
+function gridCols(days) {
+  if (!days || days > 300) return 26;
+  if (days > 90) return 20;
+  if (days > 30) return 15;
+  return 10;
+}
+
 export async function render(container) {
   container.innerHTML = `
-    <p class="muted">Builds a real listening history by appending recently-played plays to localStorage every time you load this page (Spotify only returns the last 50 directly).</p>
+    <p class="muted">Builds your listening history over time — syncs the last 50 plays to Redis on each visit so it grows forever.</p>
     <div class="controls">
-      <button class="hm-refresh">Refresh now</button>
-      <button class="hm-clear">Clear history</button>
+      <label>Range:
+        <select class="hm-range">
+          ${RANGES.map((r, i) => `<option value="${i}"${i === 1 ? " selected" : ""}>${r.label}</option>`).join("")}
+        </select>
+      </label>
+      <button class="hm-refresh">Sync now</button>
       <span class="hm-stats muted"></span>
     </div>
     <div class="hm-grid"></div>
@@ -31,16 +42,19 @@ export async function render(container) {
   `;
 
   const $ = (s) => container.querySelector(s);
+  let allHistory = [];
 
-  async function refresh() {
-    const stored = loadHistory();
-    const seen = new Set(stored.map((e) => e.played_at + "|" + e.track_id));
+  async function sync() {
+    $(".hm-stats").textContent = "Syncing…";
+    allHistory = await loadHistory();
+    const seen = new Set(allHistory.map((e) => e.played_at + "|" + e.track_id));
+    const newEntries = [];
     try {
       const data = await getRecentlyPlayed(50);
       for (const entry of data.items ?? []) {
         const key = entry.played_at + "|" + entry.track.id;
         if (!seen.has(key)) {
-          stored.push({
+          newEntries.push({
             played_at: entry.played_at,
             track_id: entry.track.id,
             name: entry.track.name,
@@ -49,43 +63,81 @@ export async function render(container) {
           seen.add(key);
         }
       }
-      stored.sort((a, b) => a.played_at.localeCompare(b.played_at));
-      saveHistory(stored);
+      if (newEntries.length > 0) {
+        await saveHistory(newEntries);
+        allHistory = await loadHistory();
+      }
+      $(".hm-stats").textContent = `${allHistory.length} plays stored · +${newEntries.length} new`;
     } catch (e) {
-      $(".hm-stats").textContent = `(refresh failed: ${e.message})`;
+      $(".hm-stats").textContent = `Sync failed: ${e.message}`;
     }
     paint();
   }
 
   function paint() {
-    const history = loadHistory();
-    $(".hm-stats").textContent = `${history.length} plays tracked`;
+    const rangeIdx = Number($(".hm-range").value);
+    const { days } = RANGES[rangeIdx];
 
-    const buckets = buildDayBuckets(history);
+    // Filter history to the selected window
+    const cutoff = days
+      ? new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+    const filtered = cutoff
+      ? allHistory.filter((e) => e.played_at >= cutoff)
+      : allHistory;
+
+    const buckets = buildDayBuckets(filtered);
+
+    // Build the list of days to show
     const today = new Date();
-    const days = [];
-    for (let i = DAYS_TO_SHOW - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
-      const k = dayKey(d);
-      days.push({ key: k, label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }), count: buckets.get(k) ?? 0 });
+    const dayList = [];
+    if (days) {
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const k = dayKey(d);
+        dayList.push({ key: k, label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }), count: buckets.get(k) ?? 0 });
+      }
+    } else {
+      // All time — build from first recorded play to today
+      const firstDate = allHistory.length
+        ? new Date(allHistory[0].played_at)
+        : today;
+      const totalDays = Math.ceil((today - firstDate) / (1000 * 60 * 60 * 24)) + 1;
+      for (let i = totalDays - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const k = dayKey(d);
+        dayList.push({ key: k, label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }), count: buckets.get(k) ?? 0 });
+      }
     }
-    const max = Math.max(1, ...days.map((d) => d.count));
+
+    const max = Math.max(1, ...dayList.map((d) => d.count));
+    const cols = gridCols(days ?? dayList.length);
+
     const grid = $(".hm-grid");
+    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     grid.innerHTML = "";
-    for (const d of days) {
+
+    for (const d of dayList) {
       const cell = document.createElement("div");
       cell.className = "hm-cell";
-      const intensity = d.count === 0 ? 0 : 0.2 + 0.8 * (d.count / max);
-      cell.style.background = `rgba(29, 185, 84, ${intensity})`;
-      cell.title = `${d.label}: ${d.count} plays`;
-      cell.innerHTML = `<span class="hm-day">${d.label.split(" ")[1]}</span><span class="hm-count">${d.count}</span>`;
+      const intensity = d.count === 0 ? 0 : 0.15 + 0.85 * (d.count / max);
+      cell.style.background = intensity === 0
+        ? "var(--bg-elev)"
+        : `rgba(29, 185, 84, ${intensity})`;
+      cell.title = `${d.key}: ${d.count} play${d.count !== 1 ? "s" : ""}`;
+      // Only show labels if there aren't too many cells
+      if (dayList.length <= 120) {
+        cell.innerHTML = `<span class="hm-day">${d.label.split(" ")[1]}</span><span class="hm-count">${d.count || ""}</span>`;
+      }
       grid.appendChild(cell);
     }
 
-    const recent = history.slice(-20).reverse();
+    // Recent plays list (always from full history)
+    const recent = allHistory.slice(-20).reverse();
     const recentDiv = $(".hm-recent");
-    recentDiv.innerHTML = "<h3>Most recent plays</h3>";
+    recentDiv.innerHTML = `<h3>Most recent plays <span class="muted">(${filtered.length} plays in range)</span></h3>`;
     const list = document.createElement("ol");
     list.className = "track-list";
     for (const e of recent) {
@@ -101,13 +153,8 @@ export async function render(container) {
     recentDiv.appendChild(list);
   }
 
-  $(".hm-refresh").addEventListener("click", () => refresh());
-  $(".hm-clear").addEventListener("click", () => {
-    if (confirm("Clear all stored play history?")) {
-      localStorage.removeItem(HISTORY_KEY);
-      paint();
-    }
-  });
+  $(".hm-refresh").addEventListener("click", sync);
+  $(".hm-range").addEventListener("change", paint);
 
-  await refresh();
+  await sync();
 }

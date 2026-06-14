@@ -30,8 +30,11 @@ export async function render(container) {
   `;
   container.appendChild(profileCard);
 
+  const name = profile.display_name ?? profile.id;
   const headerUser = document.getElementById("header-user");
-  if (headerUser) headerUser.textContent = profile.display_name ?? profile.id;
+  if (headerUser) headerUser.textContent = name;
+  const mobileUser = document.getElementById("mobile-user");
+  if (mobileUser) mobileUser.textContent = name;
 
   if (playing && playing.item) {
     const np = document.createElement("div");

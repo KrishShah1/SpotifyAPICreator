@@ -9,7 +9,7 @@ export async function render(container) {
 
   const grid = container.querySelector(".tod-grid");
   const summary = container.querySelector(".tod-summary");
-  const history = loadHistory();
+  const history = await loadHistory();
 
   if (history.length === 0) {
     summary.innerHTML = `<p class="muted">No history stored yet — open the Heatmap tab once to seed it.</p>`;
