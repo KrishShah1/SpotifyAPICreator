@@ -737,7 +737,7 @@ button:hover { filter: brightness(1.1); }
   }
   #sidebar.open { transform: translateX(0); }
 
-  .panel { padding: 16px; }
+  .panel { padding: 16px; margin: 0; max-width: 100%; }
   .np-card { grid-template-columns: 1fr; }
   .np-art, .np-art-placeholder { width: 100%; height: auto; aspect-ratio: 1; }
   .hm-grid { grid-template-columns: repeat(10, 1fr) !important; }
