@@ -173,7 +173,7 @@ body {
 .panel { padding: 24px; max-width: 900px; margin: 0 auto; width: 100%; }
 
 /* ── Login / Landing ── */
-#login-section { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+#login-section { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
 
 .login-hero {
   max-width: 520px;
