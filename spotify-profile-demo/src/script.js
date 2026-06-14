@@ -72,7 +72,7 @@ function showLoggedIn() {
 }
 
 function showLoggedOut() {
-  document.getElementById("login-section").style.display = "block";
+  document.getElementById("login-section").style.display = "flex";
   document.getElementById("app-shell").style.display = "none";
 }
 
