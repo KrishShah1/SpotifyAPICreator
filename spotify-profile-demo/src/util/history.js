@@ -18,10 +18,11 @@ function localSave(entries) {
 
 // --- Remote (Redis via API route) ---
 
-export async function loadHistory() {
+export async function loadHistory(userId) {
   if (IS_LOCAL) return localLoad();
   try {
-    const r = await fetch("/api/history");
+    const url = userId ? `/api/history?userId=${encodeURIComponent(userId)}` : "/api/history";
+    const r = await fetch(url);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const { history } = await r.json();
     return history ?? [];
@@ -30,7 +31,7 @@ export async function loadHistory() {
   }
 }
 
-export async function saveHistory(entries) {
+export async function saveHistory(entries, userId) {
   if (IS_LOCAL) {
     localSave(entries);
     return;
@@ -39,7 +40,7 @@ export async function saveHistory(entries) {
     await fetch("/api/history", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ entries }),
+      body: JSON.stringify({ entries, userId }),
     });
   } catch {
     localSave(entries);

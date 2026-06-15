@@ -1,4 +1,4 @@
-import { getRecentlyPlayed } from "../api.js";
+import { getRecentlyPlayed, getCurrentUser } from "../api.js";
 import { loadHistory, saveHistory, dayKey } from "../util/history.js";
 
 const RANGES = [
@@ -43,10 +43,17 @@ export async function render(container) {
 
   const $ = (s) => container.querySelector(s);
   let allHistory = [];
+  let currentUserId = null;
 
   async function sync() {
     $(".hm-stats").textContent = "Syncing…";
-    allHistory = await loadHistory();
+    try {
+      const user = await getCurrentUser();
+      currentUserId = user?.id ?? null;
+    } catch {
+      currentUserId = null;
+    }
+    allHistory = await loadHistory(currentUserId);
     const seen = new Set(allHistory.map((e) => e.played_at + "|" + e.track_id));
     const newEntries = [];
     try {
@@ -64,8 +71,8 @@ export async function render(container) {
         }
       }
       if (newEntries.length > 0) {
-        await saveHistory(newEntries);
-        allHistory = await loadHistory();
+        await saveHistory(newEntries, currentUserId);
+        allHistory = await loadHistory(currentUserId);
       }
       $(".hm-stats").textContent = `${allHistory.length} plays stored · +${newEntries.length} new`;
     } catch (e) {

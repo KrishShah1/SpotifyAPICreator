@@ -1,5 +1,7 @@
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI ?? "http://127.0.0.1:5173/callback";
+const REDIRECT_URI = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+  ? `http://${window.location.host}/callback`
+  : "https://spotify-api-creator.vercel.app/callback";
 const SCOPES = "user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private user-top-read user-read-recently-played user-read-currently-playing user-follow-read user-library-read user-library-modify";
 const AUTH_URL = "https://accounts.spotify.com/authorize";
 const TOKEN_URL = "https://accounts.spotify.com/api/token";

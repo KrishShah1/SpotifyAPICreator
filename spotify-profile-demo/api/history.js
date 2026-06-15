@@ -1,6 +1,11 @@
 const REDIS_URL = process.env.KV_REST_API_URL;
 const REDIS_TOKEN = process.env.KV_REST_API_TOKEN;
-const HISTORY_KEY = "spotify_history";
+const ALLOWED_USER_ID = process.env.ALLOWED_USER_ID; // Krish's Spotify user ID
+const MAX_ENTRIES = 10000;
+
+function historyKey(userId) {
+  return `spotify_history:${userId}`;
+}
 
 async function redisGet(key) {
   const r = await fetch(`${REDIS_URL}/pipeline`, {
@@ -39,17 +44,28 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === "GET") {
-      const history = await redisGet(HISTORY_KEY);
+      const userId = req.query.userId;
+      if (!userId || userId !== ALLOWED_USER_ID) {
+        return res.json({ history: [], count: 0 });
+      }
+      const history = await redisGet(historyKey(userId));
       return res.json({ history, count: history.length });
     }
 
     if (req.method === "POST") {
-      const { entries } = req.body;
+      const { entries, userId } = req.body;
+
+      // Silently ignore writes from anyone who isn't Krish
+      if (!userId || userId !== ALLOWED_USER_ID) {
+        return res.json({ count: 0, added: 0 });
+      }
+
       if (!Array.isArray(entries)) {
         return res.status(400).json({ error: "entries must be an array" });
       }
 
-      const existing = await redisGet(HISTORY_KEY);
+      const key = historyKey(userId);
+      const existing = await redisGet(key);
       const seen = new Set(existing.map((e) => `${e.played_at}|${e.track_id}`));
       const newEntries = entries.filter((e) => !seen.has(`${e.played_at}|${e.track_id}`));
 
@@ -58,9 +74,10 @@ export default async function handler(req, res) {
       }
 
       const merged = [...existing, ...newEntries]
-        .sort((a, b) => a.played_at.localeCompare(b.played_at));
+        .sort((a, b) => a.played_at.localeCompare(b.played_at))
+        .slice(-MAX_ENTRIES); // cap at 10k to prevent Redis overflow
 
-      await redisSet(HISTORY_KEY, merged);
+      await redisSet(key, merged);
       return res.json({ count: merged.length, added: newEntries.length });
     }
 
